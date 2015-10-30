@@ -202,24 +202,3 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
 };
 
-/* Expected Swipeshow format (for notes only)
-
-  //html
-  <div class="my-gallery swipeshow">
-    <ul class="slides">
-      <li class="slide"> ... </li>
-      <li class="slide"> ... </li>
-      <li class="slide"> ... </li>
-    </ul>
-  </div>
-
-  //css
-  .my-gallery {
-    width: 200px;
-    height: 200px;
-  }
-
-  //JS
-  $(".my-gallery").swipeshow();
-
-*/
