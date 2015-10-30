@@ -12,8 +12,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
   // Set options and defaults
   if (typeof _options === 'undefined') _options = {};
 
-  this.id = _options.id || 'avt_swiper_' + parseInt(Math.random() * 999);
-
   this.slideWidth = _options.slideWidth || $(window).width();
   this.slideHeight = _options.slideHeight || $(window).height();
 
@@ -29,7 +27,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
   // Set up container div for swipeshow.
   this.containerDiv = _containerDiv;
   $(this.containerDiv).addClass('swipeshow');
-  $(this.containerDiv).attr('id', this.id);
   $(this.containerDiv).css('width', this.slideWidth);
   $(this.containerDiv).css('height', this.slideHeight);
 
