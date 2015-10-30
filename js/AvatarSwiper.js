@@ -23,6 +23,9 @@ var AvatarSwiper = function(_containerDiv, _options) {
   this.swipeLayers = [];
   this.currentLayer = -1;
 
+  // Where we track the user's selections
+  this.selections = [];
+
   // Set up container div for swipeshow.
   this.containerDiv = _containerDiv;
   $(this.containerDiv).addClass('swipeshow');
@@ -30,7 +33,40 @@ var AvatarSwiper = function(_containerDiv, _options) {
   $(this.containerDiv).css('width', this.slideWidth);
   $(this.containerDiv).css('height', this.slideHeight);
 
-  this.slidesHTML = $(this.containerDiv).append('<ul class="slides"></ul>');
+  $(this.containerDiv).append('<ul class="slides"></ul>');
+  this.slides = $(this.containerDiv).children('.slides');
+
+  // Set up confirm button
+  if ('confirmBtn' in _options) {
+    this.confirmBtn = _options.confirmButton;
+  } else {
+    // Create default confirm button (for testing only. should be passed in)
+    this.confirmBtn = $('<button style="position:absolute;z-index:10;bottom:15%;left:45%;">Confirm</button>');
+    $(this.containerDiv).parent().prepend(this.confirmBtn);
+  }
+
+  var _this = this;
+  $(this.confirmBtn).on('click', function(e) {
+    console.log('confirm clicked');
+    _this.saveSelection();
+  });
+
+  // Show/Hide confirm button based on inactivity
+  this.confirmTimer = setInterval(function() {
+
+    // Check slides container for grabbed or gliding class
+    // If neither are there, it means it is snapped into place.
+    if ($(_this.slides).hasClass('grabbed') || $(_this.slides).hasClass('gliding')) {
+
+      _this.toggleConfirm(false);
+
+    } else {
+
+      _this.toggleConfirm(true);
+
+    }
+
+  }, 96);
 
   /**
    * Add Layer
@@ -83,6 +119,23 @@ var AvatarSwiper = function(_containerDiv, _options) {
   };
 
   /**
+   * Save Selection
+   *
+   * Increment to next layer of customization
+   *
+   */
+  this.saveSelection = function() {
+
+    console.log(this.swipeshow.cycler.current);
+
+    // Save current layer
+    this.selections[this.currentLayer] = this.swipeshow.cycler.current;
+
+    this.showNextLayer();
+
+  };
+
+  /**
    * Show Next Layer
    *
    * Increment to next layer of customization
@@ -94,22 +147,56 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
     console.log('showNextLayer', this.swipeLayers.length);
 
-    // TODO - save previous layer and continue displaying.
-
     // Destory previous swipeshow
     $(this.containerDiv).unswipeshow();
 
     // Clear any previous slides
-    $(this.slidesHTML).find('.slide').remove();
+    $(this.slides).find('.slide').remove();
+
+    // Ensure there is another layer to progress to...
+    if (this.currentLayer === this.swipeLayers.length) {
+
+      this.endSelectionPhase();
+      return;
+
+    }
 
     // Load new slides
     var lSlides = this.swipeLayers[this.currentLayer];
     for (var i = 0; i < lSlides.length; i++) {
-      $(this.containerDiv).children('.slides').append(lSlides[i]);
+      $(this.slides).append(lSlides[i]);
     };
 
     // Re-initialize swipeshow
-    $(this.containerDiv).swipeshow(this.swipeshowOptions);
+    this.swipeshow = $(this.containerDiv).swipeshow(this.swipeshowOptions);
+
+  };
+
+  /**
+   * Toggle Confirm Button
+   *
+   * Show/Hide confirm button with animation
+   *
+   */
+  this.toggleConfirm = function(_show) {
+
+    if (_show) {
+      $(this.confirmBtn).show();
+    } else {
+      $(this.confirmBtn).hide();
+    }
+
+  };
+
+  /**
+   * End selection phase
+   *
+   */
+  this.endSelectionPhase = function() {
+
+    // TODO - permanently hide confirm button, or change to submit?
+    console.log('creation finished!');
+    console.log(this.selections);
 
   };
 
