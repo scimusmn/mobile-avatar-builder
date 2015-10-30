@@ -40,10 +40,10 @@ $(document).ready(function() {
   var options = {};
   var avatarSwiper = new AvatarSwiper($('#avatar_swiper'), options);
 
-  avatarSwiper.addLayer(bodyAssets);
   avatarSwiper.addLayer(headAssets);
   avatarSwiper.addLayer(faceAssets);
   avatarSwiper.addLayer(hairAssets);
+  avatarSwiper.addLayer(bodyAssets);
 
   avatarSwiper.init();
 

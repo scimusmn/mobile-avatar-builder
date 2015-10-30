@@ -52,13 +52,13 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
       // TEMP - r color to distinguish slides....
       var rcolor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-      var slide = '<li class="slide" style="background-color:' + rcolor + ';"><img src="' + imgSrc + '"/></li>';
 
-      // var slide = '<li class="slide"><img src="' + imgSrc + '"/></li>';
+      var slide = '<li class="slide" style="background-color:' + rcolor + ';"><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
+
       layerSlides.push(slide);
     };
 
-    // Start loading images into slides
+    // TODO - Start pre-loading images?
 
     // Add to layer collection
     this.swipeLayers.push(layerSlides);
