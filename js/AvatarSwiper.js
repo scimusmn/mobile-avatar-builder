@@ -44,7 +44,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
   var _this = this;
   $(this.confirmBtn).on('click', function(e) {
-    console.log('confirm clicked');
     _this.saveSelection();
   });
 
@@ -81,12 +80,9 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
     // Create as many slides as assets
     for (var i = 0; i < _imgArray.length; i++) {
+
       var imgSrc = _imgArray[i];
-
-      // TEMP - r color to distinguish slides....
-      var rcolor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-
-      var slide = '<li class="slide" style="background-color:' + rcolor + ';"><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
+      var slide = '<li class="slide" ><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
 
       layerSlides.push(slide);
     };
@@ -118,15 +114,21 @@ var AvatarSwiper = function(_containerDiv, _options) {
   /**
    * Save Selection
    *
-   * Increment to next layer of customization
+   * Increment to next step/layer of customization
    *
    */
   this.saveSelection = function() {
 
-    console.log(this.swipeshow.cycler.current);
-
     // Save current layer
-    this.selections[this.currentLayer] = this.swipeshow.cycler.current;
+    var selectedIndex = this.swipeshow.cycler.current;
+    this.selections[this.currentLayer] = selectedIndex;
+
+    // Clone image outside of swipeshow.
+    var clonedImg = $(this.slides).find('.slide.active img').clone().prependTo(this.containerDiv);
+
+    $(clonedImg).attr('id', 'layer_' + this.currentLayer);
+    $(clonedImg).css('position', 'absolute');
+    $(clonedImg).css('pointer-events', 'none');
 
     this.showNextLayer();
 
@@ -142,8 +144,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
     this.currentLayer++;
 
-    console.log('showNextLayer', this.swipeLayers.length);
-
     // Destory previous swipeshow
     $(this.containerDiv).unswipeshow();
 
@@ -154,6 +154,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
     if (this.currentLayer === this.swipeLayers.length) {
 
       this.endSelectionPhase();
+
       return;
 
     }
@@ -192,7 +193,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
   this.endSelectionPhase = function() {
 
     // TODO - permanently hide confirm button, or change to submit?
-    console.log('creation finished!');
+    console.log('Creation finished!');
     console.log(this.selections);
 
   };
