@@ -122,7 +122,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
    * Save Selection
    *
    * Increment to next step/layer of customization
-   *
    */
   this.saveSelection = function() {
 
@@ -146,7 +145,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
    * Show Next Layer
    *
    * Increment to next layer of customization
-   *
    */
   this.showNextLayer = function() {
 
@@ -191,7 +189,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
    * Toggle Confirm Button
    *
    * Show/Hide confirm button with animation
-   *
    */
   this.toggleConfirm = function(_show) {
 
@@ -205,7 +202,6 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
   /**
    * End selection phase
-   *
    */
   this.endSelectionPhase = function() {
 
