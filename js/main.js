@@ -9,7 +9,7 @@
 
 $(document).ready(function() {
 
-  // Make asset arrays.
+  // Image arrays for each layer of customization
   var bodyImages = [];
   for (var i = 1; i <= 5; i++) { bodyImages.push('img/body/body_' + i + '.png'); };
 
