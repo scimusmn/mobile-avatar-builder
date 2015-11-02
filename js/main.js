@@ -1,9 +1,6 @@
 /**
- * AvatarSwiper
  *
- * Use layers of Images to quickly create
- * a personalized avatar. Requires jquery
- * and swipeshow.js.
+ * Example usage of AvatarSwiper.js
  *
  */
 
