@@ -31,6 +31,14 @@ body {
   color:#ff0;
 }
 
-.slide img {
+#avatar_swiper{
+  top: 100px;
+  margin: auto;
+}
 
+#confirmBtn{
+  background-color: rgba(0,200,222,0.4);
+  position: fixed;
+  bottom: 50px;
+  left: 50px;
 }

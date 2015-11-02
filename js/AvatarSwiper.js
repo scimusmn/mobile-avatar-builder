@@ -9,23 +9,29 @@
 
 var AvatarSwiper = function(_containerDiv, _options) {
 
-  // Set options and defaults
+  this.containerDiv = _containerDiv;
+
+  // Options and defaults
   if (typeof _options === 'undefined') _options = {};
 
   this.slideWidth = _options.slideWidth || $(window).width();
   this.slideHeight = _options.slideHeight || $(window).height();
 
+  this.onSwitchLayer = _options.onSwitchLayer || function() {};
+
+  this.onComplete = _options.onComplete || function() {};
+
+  // Default swipeshow options
   this.swipeshowOptions = {autostart: false, initial: 0};
 
   // Track all customizeable layers
-  this.swipeLayers = [];
+  this.layers = [];
   this.currentLayer = -1;
 
   // Where we track the user's selections
-  this.selections = [];
+  this.selections = {};
 
   // Set up container div for swipeshow.
-  this.containerDiv = _containerDiv;
   $(this.containerDiv).addClass('swipeshow');
   $(this.containerDiv).css('width', this.slideWidth);
   $(this.containerDiv).css('height', this.slideHeight);
@@ -33,13 +39,10 @@ var AvatarSwiper = function(_containerDiv, _options) {
   $(this.containerDiv).append('<ul class="slides"></ul>');
   this.slides = $(this.containerDiv).children('.slides');
 
-  // Set up confirm button
-  if ('confirmBtn' in _options) {
-    this.confirmBtn = _options.confirmButton;
-  } else {
-    // Create default confirm button (for testing only. should be passed in)
-    this.confirmBtn = $('<button style="position:absolute;z-index:10;bottom:15%;left:45%;">Confirm</button>');
-    $(this.containerDiv).parent().prepend(this.confirmBtn);
+  this.confirmBtn = _options.confirmBtn || $('#confirmBtn');
+
+  if ($.isEmptyObject(this.confirmBtn)) {
+    console.log('AvatarSwiper.js: No confirm button found.\nPass in jquery object through options, or designate id of "confirmBtn"');
   }
 
   var _this = this;
@@ -74,23 +77,27 @@ var AvatarSwiper = function(_containerDiv, _options) {
    * customization process.
    *
    */
-  this.addLayer = function(_imgArray) {
+  this.addLayer = function(_id, _imgArray, _zIndex) {
 
+    var layer = {};
     var layerSlides = [];
+
+    layer.id = _id;
+    layer.zIndex = _zIndex || 0;
 
     // Create as many slides as assets
     for (var i = 0; i < _imgArray.length; i++) {
 
       var imgSrc = _imgArray[i];
-      var slide = '<li class="slide" ><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
-
+      var slide = '<li class="slide"><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
       layerSlides.push(slide);
+
     };
 
-    // TODO - Start pre-loading images?
+    layer.slides = layerSlides;
 
     // Add to layer collection
-    this.swipeLayers.push(layerSlides);
+    this.layers.push(layer);
 
   };
 
@@ -121,7 +128,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
     // Save current layer
     var selectedIndex = this.swipeshow.cycler.current;
-    this.selections[this.currentLayer] = selectedIndex;
+    this.selections[this.layers[this.currentLayer].id] = selectedIndex;
 
     // Clone image outside of swipeshow.
     var clonedImg = $(this.slides).find('.slide.active img').clone().prependTo(this.containerDiv);
@@ -129,6 +136,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
     $(clonedImg).attr('id', 'layer_' + this.currentLayer);
     $(clonedImg).css('position', 'absolute');
     $(clonedImg).css('pointer-events', 'none');
+    $(clonedImg).css('z-index', this.layers[this.currentLayer].zIndex);
 
     this.showNextLayer();
 
@@ -151,7 +159,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
     $(this.slides).find('.slide').remove();
 
     // Ensure there is another layer to progress to...
-    if (this.currentLayer === this.swipeLayers.length) {
+    if (this.currentLayer === this.layers.length) {
 
       this.endSelectionPhase();
 
@@ -159,14 +167,23 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
     }
 
+    // Trigger callback (useful for external UI)
+    this.onSwitchLayer(this.layers[this.currentLayer].id);
+
     // Load new slides
-    var lSlides = this.swipeLayers[this.currentLayer];
+    var lSlides = this.layers[this.currentLayer].slides;
     for (var i = 0; i < lSlides.length; i++) {
       $(this.slides).append(lSlides[i]);
     };
 
     // Re-initialize swipeshow
     this.swipeshow = $(this.containerDiv).swipeshow(this.swipeshowOptions);
+
+    // Set z-index of current interactive layer.
+    $(this.slides).css('z-index', this.layers[this.currentLayer].zIndex);
+
+    // Override swipeshow's default behavior of hiding other slides.
+    $(this.containerDiv).css('overflow', 'visible');
 
   };
 
@@ -192,9 +209,11 @@ var AvatarSwiper = function(_containerDiv, _options) {
    */
   this.endSelectionPhase = function() {
 
-    // TODO - permanently hide confirm button, or change to submit?
-    console.log('Creation finished!');
-    console.log(this.selections);
+    // Hide confirm button
+    this.toggleConfirm(false);
+    clearInterval(this.confirmTimer);
+
+    this.onComplete(this.selections);
 
   };
 
