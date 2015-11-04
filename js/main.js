@@ -23,16 +23,21 @@ $(document).ready(function() {
   var options = {
                     slideWidth: 200,
 
-                    slideHeight: 120,
+                    slideHeight: 400,
+
+                    overlap: 40,
 
                     confirmBtn: $('#confirmBtn'),
 
                     onSwitchLayer: function(nextLayerId) {
-                      $('#instructions .highlight').text(nextLayerId);
+                      $('.highlight').text(nextLayerId);
                     },
 
                     onComplete: function(selections) {
                       $('#instructions').html(JSON.stringify(selections));
+                      $('.swipeshow img').each(function() {
+                        danceAJig($(this));
+                      });
                     },
 
                   };
@@ -47,3 +52,22 @@ $(document).ready(function() {
   avatarSwiper.init();
 
 });
+
+function danceAJig(element) {
+
+  var rpad1 = Math.ceil(Math.random() * 2);
+  var rpad2 = Math.ceil(Math.random() * 2);
+  var rpad3 = Math.ceil(Math.random() * 2);
+  var rpad4 = Math.ceil(Math.random() * 2);
+
+  $(element).animate({
+    'padding-top': rpad1,
+    'padding-right': rpad2,
+    'padding-bottom': rpad3,
+    'padding-left': rpad4,
+  }, 86,
+    function() {
+    danceAJig($(element));
+  });
+}
+

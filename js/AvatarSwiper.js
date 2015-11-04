@@ -13,59 +13,30 @@ var AvatarSwiper = function(_containerDiv, _options) {
 
   // Options and defaults
   if (typeof _options === 'undefined') _options = {};
-
   this.slideWidth = _options.slideWidth || $(window).width();
   this.slideHeight = _options.slideHeight || $(window).height();
-
+  this.overlap = _options.overlap || 0;
   this.onSwitchLayer = _options.onSwitchLayer || function() {};
-
   this.onComplete = _options.onComplete || function() {};
+  this.confirmBtn = _options.confirmBtn || $('#confirmBtn');
 
   // Default swipeshow options
   this.swipeshowOptions = {autostart: false, initial: 0};
 
-  // Track all customizeable layers
+  // Store customizeable layers
   this.layers = [];
   this.currentLayer = -1;
 
-  // Where we track the user's selections
+  // Store user's selections
   this.selections = {};
 
-  // Set up container div for swipeshow.
+  // Ready container div for swipeshow.
   $(this.containerDiv).addClass('swipeshow');
   $(this.containerDiv).css('width', this.slideWidth);
   $(this.containerDiv).css('height', this.slideHeight);
-
   $(this.containerDiv).append('<ul class="slides"></ul>');
   this.slides = $(this.containerDiv).children('.slides');
 
-  this.confirmBtn = _options.confirmBtn || $('#confirmBtn');
-
-  if ($.isEmptyObject(this.confirmBtn)) {
-    console.log('AvatarSwiper.js: No confirm button found.\nPass in jquery object through options, or designate id of "confirmBtn"');
-  }
-
-  var _this = this;
-  $(this.confirmBtn).on('click', function(e) {
-    _this.saveSelection();
-  });
-
-  // Show/Hide confirm button based on inactivity
-  this.confirmTimer = setInterval(function() {
-
-    // Check slides container for grabbed or gliding class
-    // If neither are there, it means it is snapped into place.
-    if ($(_this.slides).hasClass('grabbed') || $(_this.slides).hasClass('gliding')) {
-
-      _this.toggleConfirm(false);
-
-    } else {
-
-      _this.toggleConfirm(true);
-
-    }
-
-  }, 96);
 
   /**
    * Add Layer
@@ -85,11 +56,14 @@ var AvatarSwiper = function(_containerDiv, _options) {
     layer.id = _id;
     layer.zIndex = _zIndex || 0;
 
+    var imgWidth = this.slideWidth + this.overlap;
+
     // Create as many slides as assets
     for (var i = 0; i < _imgArray.length; i++) {
 
       var imgSrc = _imgArray[i];
-      var slide = '<li class="slide"><img style="display:block; margin:auto;" width=' + this.slideWidth + ' src="' + imgSrc + '"/></li>';
+      var slide = '<li class="slide"><img style="display:block; margin:auto; position:absolute; left: 50%; top: 50%; -webkit-transform: translateY(-50%) translateX(-50%);" width=' + imgWidth + ' src="' + imgSrc + '"/></li>';
+
       layerSlides.push(slide);
 
     };
@@ -112,9 +86,50 @@ var AvatarSwiper = function(_containerDiv, _options) {
    */
   this.init = function() {
 
+    // Set up confirm button
+    this.setupConfirmBtn();
+
     // Setup first swipe layer, and begin.
     this.currentLayer = -1;
     this.showNextLayer();
+
+  };
+
+  /**
+   * Setup confirm button
+   *
+   * Show and hide confirm button
+   * based on swipe activity
+   *
+   */
+  this.setupConfirmBtn = function() {
+
+    if ($.isEmptyObject(this.confirmBtn)) console.log('AvatarSwiper.js: No confirm button found.\nPass in jquery object through options, or designate id of "confirmBtn"');
+
+    $(this.confirmBtn).show();
+
+    var _this = this;
+    $(this.confirmBtn).on('click', function(e) {
+
+      _this.saveSelection();
+
+    });
+
+    this.confirmTimer = setInterval(function() {
+
+      if ($(_this.slides).hasClass('grabbed') || $(_this.slides).hasClass('gliding')) {
+
+        $(_this.confirmBtn).removeClass('enabled');
+        $(_this.confirmBtn).addClass('disabled');
+
+      } else {
+
+        $(_this.confirmBtn).addClass('enabled');
+        $(_this.confirmBtn).removeClass('disabled');
+
+      }
+
+    }, 30);
 
   };
 
@@ -153,6 +168,9 @@ var AvatarSwiper = function(_containerDiv, _options) {
     // Destory previous swipeshow
     $(this.containerDiv).unswipeshow();
 
+    // Hide
+    $(this.slides).hide();
+
     // Clear any previous slides
     $(this.slides).find('.slide').remove();
 
@@ -183,20 +201,8 @@ var AvatarSwiper = function(_containerDiv, _options) {
     // Override swipeshow's default behavior of hiding other slides.
     $(this.containerDiv).css('overflow', 'visible');
 
-  };
-
-  /**
-   * Toggle Confirm Button
-   *
-   * Show/Hide confirm button with animation
-   */
-  this.toggleConfirm = function(_show) {
-
-    if (_show) {
-      $(this.confirmBtn).show();
-    } else {
-      $(this.confirmBtn).hide();
-    }
+    // Fade new layer in ...
+    $(this.slides).fadeIn(400);
 
   };
 
@@ -206,9 +212,10 @@ var AvatarSwiper = function(_containerDiv, _options) {
   this.endSelectionPhase = function() {
 
     // Hide confirm button
-    this.toggleConfirm(false);
+    $(this.confirmBtn).hide();
     clearInterval(this.confirmTimer);
 
+    // Trigger completion callback with final selections
     this.onComplete(this.selections);
 
   };
