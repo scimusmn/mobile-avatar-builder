@@ -32,40 +32,53 @@ body {
 }
 
 #avatar_swiper{
-  top: 100px;
+  top: 0px;
   margin: auto;
-  background-color: rgba(255,255,255,0.025);
-  border: 1px solid rgba(0,0,0,0.2);
+  background-color: rgba(255,255,255,0.2);
+  border: 1px solid rgba(0,0,0,0.4);
 }
 
 #confirmBtn{
-
-  position: fixed;
-  width: 100px;
-  height: 100px;
-
-  margin: auto;
-  left: 110px;
-  bottom: 60px;
-
-  background: url("../img/btn_yep.png");
-  background-size: 100px 100px;
-
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-
-#confirmBtn:active{
-  background-position: 0px 2px;
+  margin: 0px auto;
+  transition: opacity 0.3s ease-out, transform 0.05s ease-out;
 }
 
 #confirmBtn.enabled{
-  transition-delay: 0.3s;
   opacity:1;
-  transform: scale(1);
 }
 
 #confirmBtn.disabled{
-  opacity:0.1;
-  transform: scale(0.7);
+  opacity:0.3;
 }
+
+#confirmBtn:active{
+  background: #863636;
+  transform: scale(0.95);
+}
+
+.round-button {
+    display:block;
+    width:100px;
+    height:100px;
+    line-height:100px;
+    border: 2px solid #f5f5f5;
+    border-radius: 50%;
+    color:#f5f5f5;
+    text-align:center;
+    text-decoration:none;
+    background: #464646;
+    box-shadow: 0 0 3px gray;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.slides .slide {
+  transition: opacity 0.3s ease-out;
+  opacity:0.3;
+}
+
+.slides .slide.active {
+  opacity:1;
+}
+
 

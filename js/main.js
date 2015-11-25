@@ -35,9 +35,9 @@ $(document).ready(function() {
 
                     onComplete: function(selections) {
                       $('#instructions').html(JSON.stringify(selections));
-                      $('.swipeshow img').each(function() {
-                        danceAJig($(this));
-                      });
+
+                      floatUpDown($('.swipeshow img'));
+
                     },
 
                   };
@@ -53,21 +53,26 @@ $(document).ready(function() {
 
 });
 
-function danceAJig(element) {
+var up = false;
+function floatUpDown(element) {
 
-  var rpad1 = Math.ceil(Math.random() * 2);
-  var rpad2 = Math.ceil(Math.random() * 2);
-  var rpad3 = Math.ceil(Math.random() * 2);
-  var rpad4 = Math.ceil(Math.random() * 2);
+  var rpad1 = 0;
+  if (up === false) {
+    rpad1 = 120;
+    up = true;
+  } else {
+    up = false;
+  }
 
   $(element).animate({
+
     'padding-top': rpad1,
-    'padding-right': rpad2,
-    'padding-bottom': rpad3,
-    'padding-left': rpad4,
-  }, 86,
-    function() {
-    danceAJig($(element));
+
+  }, 450, function() {
+
+      floatUpDown(element);
+
   });
+
 }
 

@@ -17,11 +17,10 @@ var AvatarSwiper = function(_containerDiv, _options) {
   this.slideHeight = _options.slideHeight || $(window).height();
   this.overlap = _options.overlap || 0;
   this.onSwitchLayer = _options.onSwitchLayer || function() {};
-  this.onComplete = _options.onComplete || function() {};
-  this.confirmBtn = _options.confirmBtn || $('#confirmBtn');
 
-  // Default swipeshow options
-  this.swipeshowOptions = {autostart: false, initial: 0};
+  this.onComplete = _options.onComplete || function() {};
+
+  this.confirmBtn = _options.confirmBtn || $('#confirmBtn');
 
   // Store customizeable layers
   this.layers = [];
@@ -37,6 +36,8 @@ var AvatarSwiper = function(_containerDiv, _options) {
   $(this.containerDiv).append('<ul class="slides"></ul>');
   this.slides = $(this.containerDiv).children('.slides');
 
+  // Default swipeshow options
+  this.swipeshowOptions = {autostart: false, initial: 0};
 
   /**
    * Add Layer
@@ -104,7 +105,7 @@ var AvatarSwiper = function(_containerDiv, _options) {
    */
   this.setupConfirmBtn = function() {
 
-    if ($.isEmptyObject(this.confirmBtn)) console.log('AvatarSwiper.js: No confirm button found.\nPass in jquery object through options, or designate id of "confirmBtn"');
+    if ($.isEmptyObject(this.confirmBtn)) console.log('Warning: No confirm button.');
 
     $(this.confirmBtn).show();
 
@@ -130,6 +131,12 @@ var AvatarSwiper = function(_containerDiv, _options) {
       }
 
     }, 30);
+
+  };
+
+  this.onSwipeActivate = function(cur, curInd, prev, prevInd) {
+
+    console.log('swipe activate', cur, curInd, prev, prevInd);
 
   };
 
@@ -201,8 +208,11 @@ var AvatarSwiper = function(_containerDiv, _options) {
     // Override swipeshow's default behavior of hiding other slides.
     $(this.containerDiv).css('overflow', 'visible');
 
-    // Fade new layer in ...
-    $(this.slides).fadeIn(400);
+    $(this.slides).fadeIn(50);
+
+    // Start in middle of row.
+    var middleIndex = Math.ceil(lSlides.length / 2) - 1;
+    this.swipeshow.goTo(middleIndex);
 
   };
 
